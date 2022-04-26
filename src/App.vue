@@ -1,29 +1,39 @@
 <template>
   <div id="app">
-    <div>vue</div>
     <router-view/>
   </div>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script lang="ts">
+import Vue from 'vue'
+import request from '@/utils/request'
 
-#nav {
-  padding: 30px;
+const foo = 'bar'
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+export default Vue.extend({
+  name: 'App'
+})
+</script>
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+<!--<script lang="ts">-->
+<!--import Vue from 'vue'-->
+<!--import Component from 'vue-class-component'-->
+
+<!--@Component-->
+<!--export default class App extends Vue {-->
+<!--  a = 1-->
+<!--  b = '2'-->
+
+<!--  test () {-->
+<!--    console.log('a&#45;&#45;&#45;&#45;', this.a)-->
+<!--  }-->
+<!--}-->
+<!--</script>-->
+
+<style lang="scss" scoped>
+//@import "~@/styles/variables.scss";
+
+.show-color {
+  color: $warning-color;
 }
 </style>
