@@ -81,6 +81,22 @@ const routes: Array<RouteConfig> = [
         meta: {
           requiresAuth: true
         }
+      },
+      {
+        name: 'menu-create',
+        path: 'menu//create',
+        component: () => import('@/views/menu/create.vue'),
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        name: 'menu-edit',
+        path: 'menu//edit',
+        component: () => import('@/views/menu/edit.vue'),
+        meta: {
+          requiresAuth: true
+        }
       }
     ]
   },
