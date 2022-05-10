@@ -84,7 +84,7 @@ const routes: Array<RouteConfig> = [
       },
       {
         name: 'menu-create',
-        path: 'menu//create',
+        path: 'menu/create',
         component: () => import('@/views/menu/create.vue'),
         meta: {
           requiresAuth: true
@@ -92,8 +92,17 @@ const routes: Array<RouteConfig> = [
       },
       {
         name: 'menu-edit',
-        path: 'menu//edit',
+        path: 'menu/edit',
         component: () => import('@/views/menu/edit.vue'),
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        name: 'alloc-menu',
+        path: 'role/:roleId/alloc-menu',
+        component: () => import('@/views/role/alloc-menu.vue'),
+        props: true, // 将路由路径参数映射到组件的 props 数据中
         meta: {
           requiresAuth: true
         }

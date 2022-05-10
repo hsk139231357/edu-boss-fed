@@ -3,21 +3,8 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <el-form :inline="true" ref="form" :model="form" class="demo-form-inline">
-          <el-form-item label="资源名称" prop="name">
-            <el-input v-model="form.name" placeholder="资源名称"></el-input>
-          </el-form-item>
-          <el-form-item label="资源路径" prop="url">
-            <el-input v-model="form.url" placeholder="资源路径"></el-input>
-          </el-form-item>
-          <el-form-item label="资源分类" prop="categoryId">
-            <el-select v-model="form.categoryId" clearable placeholder="资源分类">
-              <el-option
-                v-for="item in resourceCategory"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
+          <el-form-item label="角色名称" prop="name">
+            <el-input v-model="form.name" placeholder="角色名称"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmit" :disabled="idLoadingFlag">查询</el-button>
@@ -25,7 +12,7 @@
           </el-form-item>
         </el-form>
       </div>
-      <el-button @click.native="$router.push({ name: 'menu-create' })">添加资源</el-button>
+      <el-button @click="handleAdd">添加角色</el-button>
       <el-table
         :data="resources"
         :border="true"
@@ -39,11 +26,7 @@
         </el-table-column>
         <el-table-column
           prop="name"
-          label="资源名称">
-        </el-table-column>
-        <el-table-column
-          prop="url"
-          label="资源路径">
+          label="角色名称">
         </el-table-column>
         <el-table-column
           prop="description"
@@ -57,6 +40,18 @@
           prop="address"
           label="操作">
           <template slot-scope="scope">
+            <el-button type="text" size="small" @click="$router.push({
+              name: 'alloc-menu',
+              params: {
+                roleId: scope.row.id
+              }
+            })">分配菜单</el-button>
+            <el-button type="text" size="small" @click="$router.push({
+              name: 'alloc-menu',
+              params: {
+                roleId: scope.row.id
+              }
+            })">分配资源</el-button>
             <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
             <el-button @click="handleDelete(scope.row)" type="text" size="small">删除</el-button>
           </template>
@@ -75,16 +70,32 @@
       >
       </el-pagination>
     </el-card>
+
+    <el-dialog
+      :title="isEdit ? '编辑角色' : '添加角色'"
+      :visible.sync="dialogVisible"
+      width="30%">
+      <create-or-edit
+        v-if="dialogVisible"
+        :role-id="roleId"
+        :is-edit="isEdit"
+        @success="onSuccess"
+        @cancel="onCancel" />
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import { Form } from 'element-ui'
-import { getResourcePages, getResourceCategory } from '@/services/resource'
+import { getRoles, deleteRole, createOrUpdate } from '@/services/role'
+import createOrEdit from './createOrEdit.vue'
 
 export default Vue.extend({
-  name: 'resourceListIndex',
+  name: 'roleListIndex',
+  components: {
+    createOrEdit
+  },
   data () {
     return {
       resources: [],
@@ -94,31 +105,31 @@ export default Vue.extend({
       },
       form: {
         name: '',
-        url: '',
-        categoryId: null, // 筛选条件
         current: 1,
         size: 10
       },
       totalCount: 0,
-      resourceCategory: [],
-      idLoadingFlag: true
+      idLoadingFlag: true,
+      dialogVisible: false,
+      roleId: null,
+      isEdit: false
     }
   },
   methods: {
     onSubmit () {
       this.form.current = 1
-      this.loadResourceInfo()
+      this.loadRoleInfo()
     },
     onReset () {
       // 重置
       (this.$refs.form as Form).resetFields()
       this.form.current = 1
-      this.loadResourceInfo()
+      this.loadRoleInfo()
     },
-    async loadResourceInfo () {
+    async loadRoleInfo () {
       this.idLoadingFlag = true
       try {
-        const { data } = await getResourcePages(this.form)
+        const { data } = await getRoles(this.form)
         this.resources = data.data.records
         this.totalCount = data.data.total
       } catch (e) {} finally {
@@ -129,22 +140,36 @@ export default Vue.extend({
       // console.log(`每页 ${val} 条`)
       this.form.size = val
       this.form.current = 1
-      this.loadResourceInfo()
+      this.loadRoleInfo()
     },
     handleCurrentChange (val: number) {
       // console.log(`当前页: ${val}`)
       this.form.current = val
-      this.loadResourceInfo()
+      this.loadRoleInfo()
     },
-    async loadResourceCategory () {
-      const { data } = await getResourceCategory()
-      console.log(data.data)
-      this.resourceCategory = data.data
+    onSuccess () {
+      this.dialogVisible = false
+      this.loadRoleInfo()
+    },
+    onCancel () {
+      this.dialogVisible = false
+    },
+    handleAdd () {
+      this.isEdit = false
+      this.dialogVisible = true
+    },
+    handleEdit (role: any) {
+      this.isEdit = true
+      this.roleId = role.id
+      this.dialogVisible = true
+    },
+    async handleDelete (role: any) {
+      await deleteRole(role.id)
+      this.loadRoleInfo()
     }
   },
   created () {
-    this.loadResourceInfo()
-    this.loadResourceCategory()
+    this.loadRoleInfo()
   }
 })
 </script>
